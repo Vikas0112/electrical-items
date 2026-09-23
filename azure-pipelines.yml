@@ -1,0 +1,32 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- checkout: self
+  displayName: 'Checkout Electrical Items'
+
+- script: |
+    echo "Checking website files..."
+    test -f index.html
+    echo "index.html found successfully"
+    echo "Website validation successful"
+  displayName: 'Validate Website'
+
+- task: CopyFiles@2
+  displayName: 'Prepare Website Artifact'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: |
+      index.html
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/electrical-items'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Website Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/electrical-items'
+    ArtifactName: 'electrical-items'
+    publishLocation: 'Container'
